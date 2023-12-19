@@ -1,26 +1,27 @@
 import { faker } from '@faker-js/faker';
 
+const formulario = {
+  username: faker.internet.userName(),
+  lastname: faker.name.lastName(),
+  email: faker.internet.email(),
+  cor: faker.color.rgb()
+};
+
 describe('Preenchendo os campos obrigatórios do formulário', () => {
   beforeEach(() => {
     cy.visit('/');
   });
 
   it('Preenchendo os campos obrigatórios e envio com sucesso do formulário', () => {
-    const formulario = {
-      username: faker.internet.userName(),
-      lastname: faker.name.lastName(),
-      email: faker.internet.email()
-    };
-
     cy.get('#nome')
       .type(formulario.username)
-      .should('be.visible', formulario.username)
+      .should('have.value', formulario.username)
     cy.get('#sobrenome')
       .type(formulario.lastname)
-      .should('be.visible', formulario.lastname)
+      .should('have.value', formulario.lastname)
     cy.get('#email')
       .type(formulario.email)
-      .should('be.visible', formulario.email)
+      .should('have.value', formulario.email)
     cy.get('#pais')
       .type('Brasil')
       .should('have.value', 'Brasil')
@@ -29,22 +30,17 @@ describe('Preenchendo os campos obrigatórios do formulário', () => {
   });
 
   it('Preenchendo os campos obrigatórios e envio com sucesso do formulário por meio do Commands', () => {
-    const formulario = {
-      username: faker.internet.userName(),
-      lastname: faker.name.lastName(),
-      email: faker.internet.email()
-    };
     cy.Forms(formulario)
   });
 
-  it('Selecionando a linguagem preferida', () => {
+  it('Selecionando a linguagem de programação preferida', () => {
     cy.get('#linguagem')
       .select('JavaScript')
-      .should('be.visible', 'JavaScript') //da pra testar todos os nomes?
+      .should('be.visible', 'JavaScript') 
   });
 
   it('Testando a selecão cheackbox', () => {
-    cy.get('input[type="checkbox"][name="checkCypress"') 
+    cy.get('input[type="checkbox"]')
       .should('not.be.checked')
       .check()
       .should('be.checked')
@@ -57,39 +53,56 @@ describe('Preenchendo os campos obrigatórios do formulário', () => {
   });
 
   it('Selecionando nível do mentorando utilizando a função check', () => {
-    cy.get('input[type="radio"][value="iniciante"]') //não soube usar o .each para acessar cada label
-      .should('not.be.checked')
-      .check()
-      .should('be.checked')
+    cy.get('input[type="radio"]')
+      .each(function ($radio) {
+        cy.wrap($radio)
+          .check()
+          .should('be.checked')
+      })
   });
 
   it('Selecionando a cor na aplicação utilizando invoke', () => {
-    const corEsperada = '#00ff00';
-    cy.get('input[type="color"]').invoke('val', corEsperada);
-    cy.get('#cor').should('have.value', corEsperada);
+    cy.get('input[type="color"]').invoke('val', formulario.cor);
+    cy.get('#cor').should('have.value', formulario.cor);
   });
 
-  it('Selecionando um arquivo', () => {
-    cy.get('input[type="file"][accept=".pdf, .doc, .docx"')
+  it('Selecionando um arquivo válido', () => {
+    cy.get('input[type="file"]')
       .selectFile('./cypress/fixtures/example.json')
       .should(function ($input) {
         expect($input[0].files[0].name).to.equal('example.json')
       })
   })
+  it('Selecionando um arquivo inválido', () => {
+    cy.get('input[type="file"]')
+      .selectFile('./cypress/fixtures/download.png')
+      .should(function ($input) {
+        expect($input[0].files[0].name).to.equal('download.png')
+      })
+  })
+  
 
   it('Selecionando o arquivo simulando drag-drop', () => {
-    cy.get('input[type="file"][accept=".pdf, .doc, .docx"')
-    .selectFile('./cypress/fixtures/example.json', {action: 'drag-drop'})
-    .should(function($input){     
-    expect($input[0].files[0].name).to.equal('example.json')
-    })
-});
+    cy.get('input[type="file"]')
+      .selectFile('./cypress/fixtures/download.png', { action: 'drag-drop' })
+      .should(function ($input) {
+        expect($input[0].files[0].name).to.equal('download.png')
+      })
+  });
+
+  it('Selecionando o arquivo simulando drag-drop com arquivo inválido', () => {
+    cy.get('input[type="file"]')
+      .selectFile('./cypress/fixtures/download.png', { action: 'drag-drop' })
+      .should(function ($input) {
+        expect($input[0].files[0].name).to.equal('download.png')
+      })
+  });
 
   it('Testando links que abrem em outra página', () => {
-    cy.get('a[href="link.html"][target="_blank"]')
-      .should('have.attr', 'target', '_blank') 
+    cy.get('a[target="_blank"]')
+      .should('have.attr', 'target', '_blank')
       .invoke('removeAttr', 'target')
-      .click(); 
+      .click();
   });
 
 

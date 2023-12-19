@@ -2,5 +2,16 @@
   "dependencies": {
     "@faker-js/faker": "^8.3.1",
     "cypress": "^13.6.1"
-  }
+  },
+  "name": "forms_app",
+  "version": "1.0.0",
+  "main": "cypress.config.js",
+  "scripts": {
+    "test": "cypress run",
+    "test:headless": "npx cypress open"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }
