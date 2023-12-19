@@ -1,4 +1,4 @@
-# AUTOMATIZANDO AS FUNCIONALIDADES DO PROJETO:
+# AUTOMATING APPLICATION FUNCTIONALITIES:
 ```bash
 git clone https://github.com/hiagoagil/Forms-cy.git
 ```
